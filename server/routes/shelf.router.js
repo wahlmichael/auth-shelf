@@ -1,11 +1,12 @@
 const express = require('express');
 const pool = require('../modules/pool');
 const router = express.Router();
+const { rejectUnauthenticated } = require('../modules/authentication-middleware');
 
 /**
  * Get all of the items on the shelf
  */
-router.get('/', (req, res) => {
+router.get('/', rejectUnauthenticated,  (req, res) => {
     const queryText = `SELECT * FROM "item"
                         ORDER BY "id";`;
     pool.query(queryText)
@@ -22,7 +23,7 @@ router.get('/', (req, res) => {
 /**
  * Add an item for the logged in user to the shelf
  */
-router.post('/', (req, res) => {
+router.post('/', rejectUnauthenticated, (req, res) => {
     const queryText = `INSERT INTO "item" ("description", "image_url", "user_id")
                         VALUES ($1, $2, $3);`;
     const queryValue = [req.body.description, req.body.image_url, req.user.id]
@@ -40,9 +41,9 @@ router.post('/', (req, res) => {
 /**
  * Delete an item if it's something the logged in user added
  */
-router.delete('/:id', (req, res) => {
-    const queryText = `DELETE FROM "item" WHERE id = $1`;
-    const queryValue = [req.params.id]
+router.delete('/:id', rejectUnauthenticated, (req, res) => {
+    const queryText = `DELETE FROM "item" WHERE id = $1 AND user_id = $2;`;
+    const queryValue = [req.params.id, req.user.id]
     pool.query(queryText, queryValue)
         .then(() => {
             res.sendStatus(200)
