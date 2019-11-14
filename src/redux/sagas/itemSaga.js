@@ -5,7 +5,6 @@ import {
     takeEvery
 } from 'redux-saga/effects';
 
-// worker Saga: will be fired on "FETCH_USER" actions
 function* fetchItems() {
     try {
         const response = yield axios.get('/api/shelf');
@@ -18,14 +17,14 @@ function* fetchItems() {
     }
 }
 
-function* fetchNewItems() {
+function* fetchNewItems(action) {
     try {
         yield axios({
             method: 'POST',
             url: '/api/shelf',
             data: {
-                description: payload.description,
-                image_url: payload.url,
+                description: action.payload.description,
+                image_url: action.payload.url,
             }
         })
         yield put({
