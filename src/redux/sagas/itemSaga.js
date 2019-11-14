@@ -1,18 +1,44 @@
 import axios from 'axios';
-import { put, takeLatest } from 'redux-saga/effects';
+import {
+    put,
+    takeLatest,
+    takeEvery
+} from 'redux-saga/effects';
 
 // worker Saga: will be fired on "FETCH_USER" actions
 function* fetchItems() {
-  try {
-    const response = yield axios.get('/api/shelf');
-    yield put({ type: 'SET_ITEMS', payload: response.data });
-  } catch (error) {
-    console.log('Item get request failed in fetch items saga', error);
-  }
+    try {
+        const response = yield axios.get('/api/shelf');
+        yield put({
+            type: 'SET_ITEMS',
+            payload: response.data
+        });
+    } catch (error) {
+        console.log('Item get request failed in fetch items saga', error);
+    }
 }
 
-function* itemsSaga() {
-  yield takeLatest('FETCH_ITEMS', fetchItems);
+function* fetchNewItems() {
+    try {
+        yield axios({
+            method: 'POST',
+            url: '/api/shelf',
+            data: {
+                description: payload.description,
+                image_url: payload.url,
+            }
+        })
+        yield put({
+            type: 'FETCH_ITEMS'
+        });
+    } catch (error) {
+        console.log('Item get request failed in fetch new items saga', error);
+    }
 }
 
-export default itemsSaga;
+function* itemSaga() {
+    yield takeEvery('FETCH_ITEMS', fetchItems);
+    yield takeEvery('FETCH_NEW_ITEMS', fetchNewItems)
+}
+
+export default itemSaga;
