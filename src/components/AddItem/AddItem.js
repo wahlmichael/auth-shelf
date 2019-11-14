@@ -18,7 +18,7 @@ class AddItem extends Component {
     }
     //update reduxState value
     addItem=(actionType)=>{
-        this.props.dispatch({type: 'FETCH_NEW_ITEM', payload: this.state.value});
+        this.props.dispatch({type: 'FETCH_NEW_ITEMS', payload: this.state});
     }
 
   render() {
@@ -28,7 +28,7 @@ class AddItem extends Component {
         <input onChange={(event)=>{this.setValue(event,'description')}}></input>
         <p>Item Url:</p>
         <input onChange={(event)=>{this.setValue(event,'url')}}></input>
-        <button onClick={this.AddItem}>Add</button>
+        <button onClick={this.addItem}>Add</button>
       </div>
     );
   }
