@@ -35,9 +35,25 @@ function* fetchNewItems(action) {
     }
 }
 
+function* deleteItems(action) {
+  console.log(action.payload); 
+  try {
+      yield axios({
+          method: 'DELETE',
+          url: `/api/shelf/${action.payload.id}`,
+      })
+      yield put({
+          type: 'FETCH_ITEMS'
+      });
+  } catch (error) {
+      console.log('error in DELETE saga', error);
+  }
+}
+
 function* itemSaga() {
     yield takeEvery('FETCH_ITEMS', fetchItems);
     yield takeEvery('FETCH_NEW_ITEMS', fetchNewItems)
+    yield takeEvery('FETCH_REMOVE_ITEM', deleteItems)
 }
 
 export default itemSaga;
