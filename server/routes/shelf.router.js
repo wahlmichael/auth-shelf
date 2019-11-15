@@ -42,16 +42,28 @@ router.post('/', rejectUnauthenticated, (req, res) => {
  * Delete an item if it's something the logged in user added
  */
 router.delete('/:id', rejectUnauthenticated, (req, res) => {
-    const queryText = `DELETE FROM "item" WHERE id = $1 AND user_id = $2;`;
-    const queryValue = [req.params.id, req.user.id]
-    pool.query(queryText, queryValue)
-        .then(() => {
-            res.sendStatus(200)
-        })
-        .catch((error) => {
-            console.log('error in DELETE', error);
-            res.sendStatus(500);
-        })
+    const queryOne=`SELECT * From item WHERE id=$1`; 
+    const queryValue = [req.params.id];
+    pool.query(queryOne,queryValue)
+    .then((response)=>{
+        if (response.rows[0].user_id==req.user.id){
+            const queryText = `DELETE FROM "item" WHERE id = $1;`;
+            const queryValue = [req.params.id]
+        pool.query(queryText, queryValue)
+            .then(() => {
+                res.sendStatus(200)
+            })
+            .catch((error) => {
+                console.log('error in DELETE', error);
+                res.sendStatus(500);
+            })
+        } else {
+            res.sendStatus(403);
+    }})
+    .catch((error)=>{
+        console.log('error in delete authority check');
+        res.sendStatus(500);
+    }) 
 });
 
 
