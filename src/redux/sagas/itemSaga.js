@@ -47,6 +47,7 @@ function* deleteItems(action) {
       });
   } catch (error) {
       console.log('error in DELETE saga', error);
+      yield put({ type: 'DELETE_REQUEST_FAILED', payload: error })
   }
 }
 
